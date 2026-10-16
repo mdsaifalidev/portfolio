@@ -61,3 +61,4 @@ yarn-error.log*
 # Agent skills installed with `npx skills add` (local tooling, not part of the site)
 /.claude/
 /skills-lock.json
+/.agents/
