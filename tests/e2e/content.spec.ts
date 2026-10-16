@@ -79,5 +79,51 @@ test.describe("content routes", () => {
     await expect(panel.getByRole("img", { name: /visitors from 3 countries/ })).toBeVisible();
     expect(await panel.locator("circle.fill-accent").count()).toBeGreaterThan(10);
   });
+
+  test("switches InsightFlow screenshot according to theme on case study page and home page", async ({ page }) => {
+    // 1. Case study page
+    await page.goto("/projects/insightflow");
+    await page.waitForLoadState("networkidle");
+
+    // Force light theme
+    await page.evaluate(() => {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    });
+    const lightImgCaseStudy = page.locator('img[src*="dashboard-light.webp"]');
+    const darkImgCaseStudy = page.locator('img[src*="dashboard-dark.webp"]');
+    await expect(lightImgCaseStudy).toBeVisible();
+    await expect(darkImgCaseStudy).toBeHidden();
+
+    // Toggle to dark theme
+    await page.evaluate(() => {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    });
+    await expect(darkImgCaseStudy).toBeVisible();
+    await expect(lightImgCaseStudy).toBeHidden();
+
+    // 2. Home page
+    await page.goto("/#work");
+    await page.waitForLoadState("networkidle");
+
+    // Force light theme
+    await page.evaluate(() => {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    });
+    const lightImgHome = page.locator('img[src*="dashboard-light.webp"]');
+    const darkImgHome = page.locator('img[src*="dashboard-dark.webp"]');
+    await expect(lightImgHome).toBeVisible();
+    await expect(darkImgHome).toBeHidden();
+
+    // Toggle to dark theme
+    await page.evaluate(() => {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    });
+    await expect(darkImgHome).toBeVisible();
+    await expect(lightImgHome).toBeHidden();
+  });
 });
 
