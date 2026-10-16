@@ -32,7 +32,12 @@ const edges: [number, number, number, number, string?, number?, number?][] = [
 
 export function InsightFlowArchitecture() {
   return (
-    <div className="overflow-x-auto border border-border bg-surface/40 p-4">
+    <div
+      tabIndex={0}
+      role="region"
+      aria-label="InsightFlow architecture diagram"
+      className="overflow-x-auto border border-border bg-surface/40 p-4 focus-visible:outline-accent"
+    >
       <svg
         viewBox="0 0 720 418"
         role="img"
