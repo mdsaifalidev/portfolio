@@ -1,0 +1,24 @@
+{/* DRAFT - drafted from a teammate's public description of the platform; Saif to replace with his own contribution.
+    Keep it anonymised: no product names or internal numbers. */}
+
+## Context
+
+A Slack-style platform for internal team communication: channels, threads, presence, typing indicators, and audio/video calls.
+
+{/* TODO(Saif): which parts did you build - messaging, presence, receipts, calling, the UI? */}
+
+## One real-time event model
+
+Messages, delivery and read receipts, presence and typing indicators all travel as typed events over a single Socket.IO connection per client. One channel to scale, authorise and debug instead of several ad-hoc ones.
+
+{/* TODO(Saif): rooms/namespaces design, how you scaled Socket.IO across instances (e.g. Redis adapter), reconnect handling. */}
+
+## From peer-to-peer calls to an SFU
+
+Calling started as peer-to-peer WebRTC with public STUN servers. That works for one-to-one calls, but in a mesh every participant sends a stream to every other participant, so group calls get heavier as they grow. Moving calls to a **LiveKit SFU** (selective forwarding unit) means each client sends one stream and the server forwards it - group calls stay smooth on ordinary laptops.
+
+{/* TODO(Saif): your role in the migration; confirm the call-latency figure before quoting it (a teammate's write-up mentions under 150 ms). */}
+
+## What I learned
+
+{/* TODO(Saif): personalise. */}

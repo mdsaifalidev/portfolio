@@ -1,0 +1,54 @@
+{/* DRAFT - structure and general guidance only. Fill the TODOs with your real experience before publishing; keep employer details anonymised. */}
+
+At HashCash Consultants I architected a multi-tenant Retrieval-Augmented Generation (RAG) chatbot platform. Each tenant gets an isolated knowledge base, and the platform cut manual information-retrieval time by roughly 30%. This post covers the decisions that matter most when one RAG system has to serve many organisations safely.
+
+## Isolation is a requirement, not a feature
+
+In a single-tenant prototype, retrieval is simple: embed the question, find the nearest chunks, answer. With many tenants, the first question changes to: *whose* chunks are you allowed to search?
+
+There are two common approaches:
+
+- **Shared tables, tenant-filtered queries.** Every chunk row carries a tenant identifier and every similarity search filters on it. It's operationally simple, but the filter must be impossible to forget - enforce it in one data-access layer, never in callers.
+- **Separate schemas or tables per tenant.** Stronger separation and easy per-tenant deletion, at the cost of more objects to manage and migrate.
+
+{/* TODO(Saif): which you chose, why, and how you tested that cross-tenant retrieval can't happen. */}
+
+## Chunking decides answer quality
+
+Most bad RAG answers are retrieval failures, and most retrieval failures start at chunking. Chunks that are too large dilute the embedding; chunks that are too small lose the context needed to answer.
+
+{/* TODO(Saif): your chunk size/overlap, whether you split on headings, how you handled tables/PDFs. */}
+
+## Embeddings and pgvector
+
+Embeddings live in PostgreSQL with pgvector. Keeping vectors next to the rest of the data means one database to operate, transactional updates when a document changes, and ordinary SQL for metadata filters such as the tenant.
+
+```sql title="Illustrative: a tenant-scoped similarity search"
+SELECT id, content
+FROM chunks
+WHERE tenant_id = $1
+ORDER BY embedding <=> $2
+LIMIT 5;
+```
+
+{/* TODO(Saif): embedding model(s) - OpenAI vs Gemini - index type (HNSW/IVFFlat), and any re-ranking. */}
+
+## Giving agents governed access with MCP
+
+Chat UIs aren't the only consumers. I also built a **read-only Model Context Protocol (MCP) server** so AI agents can search organisational knowledge through a controlled interface: agents can look things up, but the server exposes no write operations.
+
+{/* TODO(Saif): what tools the server exposes and how access is scoped. */}
+
+## Measuring whether it helped
+
+The number that mattered to users was time saved: manual information-retrieval time dropped by about 30%.
+
+{/* TODO(Saif): how you measured it, plus any answer-quality evaluation you ran. */}
+
+## Takeaways
+
+- Enforce tenant isolation in exactly one place and test it like a security boundary.
+- Spend more time on chunking and retrieval than on prompts.
+- Keep vectors in Postgres until you have a reason not to.
+
+{/* TODO(Saif): personalise the takeaways. */}

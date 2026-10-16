@@ -1,0 +1,55 @@
+{/* DRAFT - written from CV facts only. Review every line; replace TODOs with your own specifics.
+    Keep it anonymised: no client names, internal service names, data or numbers beyond the CV. */}
+
+## Context
+
+I designed and built a Node.js/Express.js backend as **6+ microservices**, then took it all the way to production on Kubernetes in AWS - including the CI/CD that made releasing it routine.
+
+<Metrics
+  items={[
+    { value: "**~60%**", label: "Less manual release effort" },
+    { value: "**80%+**", label: "Test coverage" },
+    { value: "**6+**", label: "Services on Kubernetes" },
+  ]}
+/>
+
+{/* TODO(Saif): what the product did and why it was split into services (anonymised). */}
+
+## Messaging with RabbitMQ
+
+Services communicate asynchronously over RabbitMQ using two patterns:
+
+- **Events** - a service publishes that something happened and any interested service reacts, without the publisher knowing who is listening.
+- **RPC** - request/reply over queues for cases where a caller needs an answer, without a direct HTTP dependency between services.
+
+This decoupled the core business logic: services can be deployed, scaled and fail independently.
+
+{/* TODO(Saif): an example flow, how you handled retries / dead-lettering / idempotency. */}
+
+## Containers and Kubernetes
+
+- Every service is containerised with **Docker**, with images stored in **AWS ECR**.
+- Services run on **Kubernetes (AWS EKS)**, deployed with **Helm charts**.
+
+{/* TODO(Saif): chart structure (one chart per service or umbrella?), config/secrets, autoscaling. */}
+
+## AWS infrastructure
+
+- Applications deployed on **EC2**.
+- Images, PDFs, videos and backups stored in **S3**.
+- **IAM** users, roles and permissions managed for least-privilege access.
+- Domains connected with **Route 53**.
+- Applications and servers monitored with **CloudWatch** logs.
+
+## CI/CD and testing
+
+I built **GitHub Actions** pipelines that run **Mocha/Chai** unit and integration suites on every change before building and shipping images. Automating the release path cut manual release effort by **~60%**, and growing the suites raised test coverage to **80%+**.
+
+{/* TODO(Saif): pipeline stages, how deploys to EKS were triggered, rollback strategy. */}
+
+## Outcome
+
+- Independent, decoupled services that ship through an automated pipeline.
+- **~60%** less manual release effort and **80%+** test coverage.
+
+{/* TODO(Saif): lessons learned. */}

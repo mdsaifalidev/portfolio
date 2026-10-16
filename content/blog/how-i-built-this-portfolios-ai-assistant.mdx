@@ -1,0 +1,36 @@
+{/* DRAFT - facts match this codebase (see the Portfolio AI Assistant case study). Review the voice before publishing. */}
+
+Every portfolio answers the questions its author expected. I wanted mine to answer the ones visitors actually have - so it has an assistant that knows my CV and case studies, answers in a couple of seconds and links every claim to its source. Here's how it works, and what I'd tell you if you're building one.
+
+## Start from the content you already have
+
+The assistant's knowledge base is the site itself. My experience, projects and skills live in one typed TypeScript file that renders the home page; case studies and posts are MDX. An ingest script turns both into chunks - one per role, one per project, one per `##` section of each article - each with a link to where it lives on the site.
+
+That one decision gave me three things for free: the assistant can never drift from the site, citations can deep-link to the exact paragraph, and unpublished drafts are simply never indexed.
+
+## You probably don't need a vector database
+
+My whole site is about two dozen chunks. I embed them once with Gemini, write the vectors to a JSON file in the repo, and at question time rank them with a dot product in memory. It takes microseconds and costs nothing to run.
+
+I use pgvector at work, where there are many tenants and many documents. For a portfolio, it would only add a network hop and a bill.
+
+## Write chunks the way people ask questions
+
+My first version couldn't answer "where does Saif work now?" The right chunk existed, but it read like a CV line - role, company, dates - and never said *current* or used my name. Rewriting chunks as plain statements ("Saif's current job: Software Engineer at HashCash Consultants...") fixed retrieval without touching the model.
+
+## Pick the model by measuring it
+
+I expected the newest model to be the obvious choice. On my key it took over 20 seconds to say "ok", while a Lite model streamed its first token in about 1.2 seconds. One model's free tier also allowed only 20 requests a day - fine for testing, fatal for a public page. Measure latency and check quotas before you commit; keep the model name in an environment variable.
+
+## Guardrails are mostly product decisions
+
+- Answer only about my work, only from retrieved facts, and cite them.
+- Say "I don't know" and offer my email instead of guessing.
+- Decline poems, salary questions and "ignore your instructions".
+- Rate-limit per visitor and cap total daily usage, so a burst of traffic can't exhaust the quota.
+
+## Test it like any other feature
+
+A small script asks 24 questions - facts from every role and project, refusals, prompt injection, missing information - and checks each answer for required and forbidden content. It turned "seems fine" into a number, and it's what caught the retrieval and quota problems above.
+
+{/* TODO(Saif): add your own take - what surprised you, what you'd add next (e.g. logging unanswered questions). */}

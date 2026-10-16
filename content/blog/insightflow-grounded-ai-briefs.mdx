@@ -1,0 +1,49 @@
+{/* DRAFT - facts sourced from the InsightFlow repo (README, docs/ARCHITECTURE.md). Review the voice and opinions before publishing. */}
+
+Ask a language model to summarise a spreadsheet and it will happily tell you revenue grew 14% - whether or not it did. When I built [InsightFlow](/projects/insightflow), which turns an uploaded CSV or Excel file into a dashboard plus an AI-written brief, that was the problem I cared about most. A brief with one wrong number is worse than no brief.
+
+So InsightFlow follows one rule: **every number is computed, never written by the model.**
+
+## Separate the facts from the words
+
+The brief is produced in three stages, and only one of them involves an LLM.
+
+### 1. A facts engine computes everything
+
+Before any model is called, a Polars-based facts engine computes what's worth saying about the data: totals, period-over-period deltas and the drivers behind them, anomalies via robust z-scores, and category shares. Each fact gets a stable ID and, where it makes sense, a reference to the chart and data point it came from.
+
+### 2. The model narrates with placeholders
+
+The LLM adapter (Gemini in production, a mock in development) receives the facts and a template and writes the summary, findings and follow-up questions. It never writes a figure directly - it cites facts as `{{factId}}` placeholders:
+
+```text title="Illustrative output shape"
+Revenue rose {{f_total_delta}} versus the previous period, driven mostly by
+{{f_driver_1}}. One anomaly stands out: {{f_anomaly_1}}.
+```
+
+The UI resolves each placeholder to the computed value and links it to its source chart, so every number in the brief is one click from its evidence.
+
+### 3. A validator distrusts the output
+
+Model output is treated as untrusted input. A validator scans the brief for any number that is not inside a fact reference - including dates and bare numerals - and marks those sentences as ungrounded. Ungrounded sentences trigger a retry with feedback, or are dropped. If the brief still can't be grounded, InsightFlow falls back to a template built purely from the facts.
+
+<Callout type="tip" title="The principle">
+  Let the model do language. Let code do arithmetic. Then check the model's work like you'd check any other external input.
+</Callout>
+
+## Making the pipeline fast enough to feel instant
+
+Grounding only matters if people wait for the brief. On a 1-million-row, 86.7 MB CSV, the whole upload-to-dashboard pipeline takes 12.0-12.5 seconds on development containers. A few decisions made that feel responsive:
+
+- **The upload returns immediately.** Chunks stream to object storage in 8 MB parts and the API answers `202 Accepted` in 14-19 ms (it was 1,428 ms before streaming).
+- **Progress is streamed.** Each pipeline stage - parsing, profiling, building the dashboard, generating the insight - is published over Redis pub/sub and pushed to the browser with Server-Sent Events.
+- **Inference got cheaper.** Ordering the type-inference rules took the pipeline from 17.5 s to 12.5 s.
+- **Queries batch.** All widgets plus shared filters go in one request, evaluated by Polars against cached Parquet. Single-pass KPI aggregation with masked windows took filtered-query p95 from 631 ms to 368 ms.
+
+## What I'd tell someone building the same thing
+
+- Decide which numbers the model is allowed to say *before* you write the prompt.
+- Give every fact an ID; citations are what make validation possible.
+- Always have a non-LLM fallback. A plain, correct summary beats a fluent, wrong one.
+
+{/* TODO(Saif): add a personal anecdote - a bug the validator caught, or a prompt iteration that surprised you. */}

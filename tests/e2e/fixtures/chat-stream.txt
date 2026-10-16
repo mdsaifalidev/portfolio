@@ -1,0 +1,23 @@
+data: {"type":"start","messageMetadata":{"sources":[{"n":1,"title":"Full Stack Developer Intern · Sasefied","url":"/#experience"},{"n":2,"title":"Profile & availability","url":"/#about"},{"n":3,"title":"Full Stack Developer Intern · E-SUTRA Technologies Pvt. Ltd.","url":"/#experience"},{"n":4,"title":"Full Stack Developer · Ayanlabs Solutions Pvt. Ltd.","url":"/#experience"},{"n":5,"title":"Software Engineer · HashCash Consultants","url":"/#experience"},{"n":6,"title":"Portfolio AI Assistant","url":"/projects/portfolio-ai-assistant"}]}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"0"}
+
+data: {"type":"text-delta","id":"0","delta":"Yes,"}
+
+data: {"type":"text-delta","id":"0","delta":" Saif is open to remote roles [2]. He is currently available for full-stack, backend"}
+
+data: {"type":"text-delta","id":"0","delta":" (Node.js), and AI / GenAI engineering positions, either remotely or with relocation [2]. \n\nIf you would like to get"}
+
+data: {"type":"text-delta","id":"0","delta":" in touch with him, you can email Saif directly at saifmd9536@gmail.com [2]."}
+
+
+data: {"type":"text-end","id":"0"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

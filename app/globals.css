@@ -1,0 +1,692 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* The datasheet: paper and ink, printed in two inks plus one spot colour reserved for actions and plotted
+   curves. Whole sections switch between a paper field and an ink field. Every text/background pair below
+   is >= 4.5:1 (WCAG AA) in both themes. */
+
+:root {
+  --bg: #f2f4f5; /* datasheet paper, cool */
+  --surface: #e3e7ea; /* one tone step: table heads, bars, form fields */
+  --border: #c3c9c1; /* real tables and form fields only */
+  --text: #12161c; /* datasheet ink */
+  --muted: #434b55;
+  --accent: #1747c9; /* spot blue: 6.9:1 on paper */
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(23 71 201 / 0.09);
+  --warn: #b42318;
+  /* The ink field: whole sections printed solid. */
+  --field: #12161c;
+  --field-ink: #f2f4f5;
+  --field-muted: #b4bcc6;
+  --field-tone: #1f262f;
+  --field-accent: #93b3ff;
+  /* Sheets laid over photographs and ink fields. */
+  --sheet: #f2f4f5;
+  --sheet-tone: #e3e7ea;
+  /* Page-level inks that ink fields never remap (for drawings that sit on their own sheet). */
+  --page-ink: #12161c;
+  --page-muted: #434b55;
+  --page-accent: #1747c9;
+  --page-accent-ink: #ffffff;
+  /* Code blocks: the Shiki themes are tuned for white and near-black grounds. */
+  --code-bg: #ffffff;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0c1015;
+  --surface: #1b222b;
+  --border: #323b46;
+  --text: #eceee9;
+  --muted: #a9b1bb;
+  --accent: #93b3ff;
+  --accent-ink: #0c1015;
+  --accent-soft: rgb(147 179 255 / 0.12);
+  --warn: #ff8a7a;
+  /* In the dark, the second ink is a lighter graphite than the ground, so fields still alternate. */
+  --field: #2a333e;
+  --field-ink: #eceee9;
+  --field-muted: #b6bec8;
+  --field-tone: #343e4a;
+  --field-accent: #93b3ff;
+  --sheet: #181e26;
+  --sheet-tone: #222a34;
+  --page-ink: #eceee9;
+  --page-muted: #a9b1bb;
+  --page-accent: #93b3ff;
+  --page-accent-ink: #0c1015;
+  --code-bg: #0a0d11;
+  color-scheme: dark;
+}
+
+/* Motion tokens (Emil Kowalski's curves). Tailwind's own ease utilities and default transition
+   timing resolve to these, so every transition on the site shares one feel. */
+@theme {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --default-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Six type steps for the whole site (step 5 is the giant word and nothing else). */
+  --text-step-0: 0.875rem;
+  --text-step-1: 1rem;
+  --text-step-2: clamp(1.375rem, 1.1rem + 0.9vw, 2rem);
+  --text-step-3: clamp(2.25rem, 1.4rem + 3.4vw, 4rem);
+  --text-step-4: clamp(3rem, 1.2rem + 6.4vw, 6rem);
+  --text-step-5: clamp(4.5rem, 2rem + 8vw, 8.5rem);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-field: var(--field);
+  --color-field-ink: var(--field-ink);
+  --color-field-muted: var(--field-muted);
+  --color-field-tone: var(--field-tone);
+  --color-field-accent: var(--field-accent);
+  --color-sheet: var(--sheet);
+  --color-sheet-tone: var(--sheet-tone);
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-geist-mono); /* code blocks only, taste-skill-ignore */
+}
+
+@layer base {
+  html {
+    /* No grey tap flash or landscape font inflation on phones; :active states give feedback instead. */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Reserve the scrollbar's space so locking scroll (open assistant) doesn't shift the page. */
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--muted) var(--bg);
+    accent-color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--text-step-1);
+    line-height: 1.55;
+    font-feature-settings: "tnum" 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--accent);
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Controls fire on tap without the double-tap-zoom wait, and long-press doesn't select their labels.
+     Content (paragraphs, links in prose) stays selectable. */
+  button,
+  a,
+  [role="button"],
+  summary {
+    touch-action: manipulation;
+  }
+
+  button,
+  [role="button"],
+  summary {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+@layer components {
+  /* The datasheet's part-title voice: Archivo pulled narrow, in heavy capitals. */
+  .condensed {
+    font-stretch: 70%;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.9;
+  }
+
+  /* Every home-page section title: the part-title voice at the fourth step. */
+  .part-title {
+    font-size: var(--text-step-4);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A whole section printed in the second ink. */
+  .ink-field {
+    background-color: var(--field);
+    color: var(--field-ink);
+    --text: var(--field-ink);
+    --muted: var(--field-muted);
+    --surface: var(--field-tone);
+    --accent: var(--field-accent);
+    --accent-ink: var(--field);
+  }
+
+  /* Shaped paper edges, cut with an SVG mask so the edge is the sheet's own colour (set --edge). */
+  .edge-zigzag,
+  .edge-scallop {
+    position: relative;
+  }
+
+  .edge-zigzag::after,
+  .edge-scallop::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    background-color: var(--edge, var(--sheet));
+    mask-repeat: repeat-x;
+  }
+
+  .edge-zigzag::after {
+    height: 10px;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 0h20L10 10z'/%3E%3C/svg%3E");
+    mask-size: 20px 10px;
+  }
+
+  .edge-scallop::after {
+    height: 12px;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpath d='M0 0h24a12 12 0 0 1-24 0z'/%3E%3C/svg%3E");
+    mask-size: 24px 12px;
+  }
+
+  .edge-scallop-top {
+    position: relative;
+  }
+
+  .edge-scallop-top::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 100%;
+    height: 24px;
+    background-color: var(--edge, var(--sheet));
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24'%3E%3Cpath d='M0 24a24 24 0 0 1 48 0z'/%3E%3C/svg%3E");
+    mask-size: 48px 24px;
+    mask-repeat: repeat-x;
+  }
+
+  /* A perforation: a row of round dots, as on a tear-off strip. */
+  .perforation {
+    border-top: 5px dotted currentColor;
+  }
+
+  /* Every pressable control scales slightly on press so the UI feels like it heard you.
+     Uses the standalone `scale` property so it never fights translate-based hover nudges. */
+  .pressable {
+    transition-property: scale, color, background-color, border-color, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
+  }
+
+  .pressable:active:not(:disabled, [aria-disabled="true"]) {
+    scale: 0.97;
+  }
+
+  /* Swapped icons (copy -> check, sun -> moon) enter with a short blur-scale so the change reads as
+     one transformation rather than two icons trading places. */
+  .icon-swap {
+    transition:
+      opacity 150ms var(--ease-out),
+      scale 150ms var(--ease-out),
+      filter 150ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.5;
+      filter: blur(4px);
+    }
+  }
+
+  /* Links in running text: ink with a spot-blue underline. */
+  .link {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: color 160ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .link:hover {
+      color: var(--accent);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-swap {
+    transition: opacity 150ms var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+      scale: 1;
+      filter: none;
+    }
+  }
+}
+
+/* Experience bars: the panel fades in and settles by 4px when opened (no height animation). */
+@keyframes log-open {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+details[open] > .log-body {
+  animation: log-open 220ms var(--ease-out);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details[open] > .log-body {
+    animation-name: fade-in;
+  }
+}
+
+/* While the theme flips (lib/theme.ts), suppress every transition so the page changes at once. */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
+/* ---------- Motion layer ----------
+   Section entrances: each [data-reveal] block's children rise 24px and fade in once, staggered by 70ms,
+   when the block enters the viewport (components/Reveal.tsx adds .is-in). Content is only hidden once
+   that script has marked <html> with .reveal-ready, so it is always visible without JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready [data-reveal] > * {
+    opacity: 0;
+    translate: 0 24px;
+    transition:
+      opacity 600ms var(--ease-out),
+      translate 700ms var(--ease-out);
+  }
+
+  .reveal-ready [data-reveal].is-in > * {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  [data-reveal] > :nth-child(2) {
+    transition-delay: 70ms;
+  }
+  [data-reveal] > :nth-child(3) {
+    transition-delay: 140ms;
+  }
+  [data-reveal] > :nth-child(4) {
+    transition-delay: 210ms;
+  }
+  [data-reveal] > :nth-child(5) {
+    transition-delay: 280ms;
+  }
+  [data-reveal] > :nth-child(n + 6) {
+    transition-delay: 350ms;
+  }
+
+  /* The one moving picture: the hero photograph drifts very slowly. */
+  @keyframes drift {
+    to {
+      scale: 1.08;
+      translate: -1.5% -1%;
+    }
+  }
+
+  .drift {
+    animation: drift 24s var(--ease-in-out) infinite alternate;
+  }
+}
+
+/* The assistant's "working" state: the status line breathes instead of bouncing dots. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes breathe {
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  .breathe {
+    animation: breathe 1.6s var(--ease-in-out) infinite;
+  }
+}
+
+/* Signature move: the hero datasheet is pinned while the page starts to scroll, shrinking toward the
+   bottom-right corner where it lives on as the stub (components/layout/Stub.tsx). Desktop only. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+  @supports (animation-timeline: view()) {
+    @keyframes sheet-away {
+      to {
+        scale: 0.42;
+        opacity: 0;
+      }
+    }
+
+    .sheet-away {
+      transform-origin: 100% 100%;
+      animation: sheet-away linear both;
+      animation-timeline: view();
+      animation-range: exit 10% exit 90%;
+    }
+  }
+}
+
+/* Assistant slide-over (components/chat/ChatPanel.tsx) - a native modal <dialog>. */
+html:has(dialog.chat-dialog[open]) {
+  overflow: hidden;
+}
+
+.chat-dialog {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 28rem;
+  height: 100dvh;
+  max-height: 100dvh;
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: -24px 0 64px rgb(0 0 0 / 0.25); /* a real overlay, taste-skill-ignore */
+  translate: 100% 0;
+  /* Closing (the state we transition *to* when [open] goes away): quick and decisive. */
+  transition:
+    translate 180ms var(--ease-out),
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
+}
+
+.chat-dialog[open] {
+  translate: 0 0;
+  /* Opening: a little longer, on the iOS drawer curve. */
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-drawer);
+}
+
+@starting-style {
+  .chat-dialog[open] {
+    translate: 100% 0;
+  }
+}
+
+.chat-dialog::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background 180ms var(--ease-out),
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
+}
+
+.chat-dialog[open]::backdrop {
+  background: rgb(0 0 0 / 0.5);
+  transition-duration: 300ms;
+}
+
+@starting-style {
+  .chat-dialog[open]::backdrop {
+    background: rgb(0 0 0 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-dialog,
+  .chat-dialog::backdrop {
+    transition: none;
+  }
+}
+
+/* Command palette (components/palette/CommandPalette.tsx) - centred modal <dialog>. */
+html:has(dialog.palette-dialog[open]) {
+  overflow: hidden;
+}
+
+.palette-dialog {
+  margin: 12vh auto auto;
+  padding: 0;
+  width: min(40rem, calc(100% - 2rem));
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.35); /* a real overlay, taste-skill-ignore */
+  /* No open/close animation: Ctrl+K is a keyboard action people repeat, and motion would only slow it. */
+}
+
+.palette-dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.palette-dialog [cmdk-group-heading] {
+  padding: 0.75rem 0.75rem 0.375rem;
+  font-size: var(--text-step-0);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+@layer components {
+  /* ---------- Long-form content (case studies, blog) ----------
+     Direct-child selectors keep these styles out of custom MDX blocks. */
+  .article {
+    color: var(--text);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  .article > * + * {
+    margin-top: 1.25em;
+  }
+
+  .article > h2 {
+    margin-top: 2.5em;
+    font-size: var(--text-step-2);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    scroll-margin-top: 2rem;
+  }
+
+  .article > h3 {
+    margin-top: 2em;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    scroll-margin-top: 2rem;
+  }
+
+  .article > h2 + *,
+  .article > h3 + * {
+    margin-top: 0.75em;
+  }
+
+  .article .anchor {
+    margin-left: 0.5rem;
+    color: var(--muted);
+    opacity: 0;
+    text-decoration: none;
+    transition: opacity 150ms;
+  }
+
+  .article .group:hover .anchor,
+  .article .anchor:focus-visible {
+    opacity: 1;
+  }
+
+  .article > p a,
+  .article > ul a,
+  .article > ol a,
+  .article > blockquote a,
+  .article .table-wrap a {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .article > p a:hover,
+  .article > ul a:hover,
+  .article > ol a:hover {
+    color: var(--accent);
+  }
+
+  .article strong {
+    font-weight: 700;
+  }
+
+  .article > ul,
+  .article > ol {
+    padding-left: 1.25rem;
+  }
+
+  .article > ul {
+    list-style: disc;
+  }
+
+  .article > ol {
+    list-style: decimal;
+  }
+
+  .article > ul > li + li,
+  .article > ol > li + li {
+    margin-top: 0.5em;
+  }
+
+  .article > ul > li::marker,
+  .article > ol > li::marker {
+    color: var(--muted);
+  }
+
+  .article > blockquote {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+  }
+
+  .article > hr {
+    margin: 3em 0;
+    border: 0;
+    border-top: 5px dotted var(--border);
+  }
+
+  .article :not(pre) > code {
+    background: var(--surface);
+    padding: 0.15em 0.4em;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.85em;
+  }
+
+  .article .table-wrap {
+    overflow-x: auto;
+  }
+
+  .article table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .article th,
+  .article td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article th {
+    background: var(--surface);
+    font-weight: 700;
+  }
+
+  .article tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /* Code blocks from rehype-pretty-code (dual Shiki theme, switched by .dark) */
+  .article figure[data-rehype-pretty-code-figure] {
+    margin-top: 1.5em;
+  }
+
+  .article figure[data-rehype-pretty-code-figure] pre {
+    overflow-x: auto;
+    background: var(--code-bg);
+    padding: 1rem 0;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+
+  .article figure[data-rehype-pretty-code-figure] code {
+    display: grid;
+    font-family: var(--font-mono), ui-monospace, monospace;
+  }
+
+  .article [data-line] {
+    padding: 0 1rem;
+  }
+
+  .article [data-rehype-pretty-code-figure] span {
+    color: var(--shiki-light);
+  }
+
+  .dark .article [data-rehype-pretty-code-figure] span {
+    color: var(--shiki-dark);
+  }
+
+  .article [data-rehype-pretty-code-title] {
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.8125rem;
+  }
+
+  .article [data-rehype-pretty-code-title] + pre {
+    margin-top: 0;
+  }
+}

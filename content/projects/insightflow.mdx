@@ -1,0 +1,102 @@
+{/* Sources: github.com/mdsaifalidev/InsightFlow - README.md, docs/ARCHITECTURE.md, docs/adr/. */}
+
+## The problem
+
+Traditional BI tools make you do the setup before you get an answer: configure a connector, model the data, then build charts by hand. InsightFlow skips that. Upload a CSV or Excel file (up to 100 MB) and you get an automatically generated dashboard - columns profiled, charts ranked by relevance, filters applied across every widget - plus a written executive brief.
+
+The hard constraint was trust. An AI-written summary of your data is only useful if its numbers are right, so InsightFlow follows one rule: **every number is computed, never written by the model**.
+
+<Metrics
+  items={[
+    { value: "**368-377 ms**", label: "Filtered query p95" },
+    { value: "**12.0-12.5 s**", label: "1M rows to dashboard" },
+    { value: "**189**", label: "Unit & integration tests" },
+  ]}
+/>
+
+## Architecture
+
+InsightFlow is a polyglot system in a pnpm + Turborepo monorepo: TypeScript for the web app and auth, Python for data processing, with shared, OpenAPI-generated types so services can't drift apart.
+
+<Figure caption="Service topology. data-py and data-worker share one Python codebase, running as the API and the ARQ worker.">
+  <InsightFlowArchitecture />
+</Figure>
+
+- **web** (Next.js 16) - UI, server-side data loading and route protection.
+- **gateway** (nginx) - path routing, rate limiting and SSE passthrough.
+- **auth-node** (Fastify) - sessions, RS256 JWT issuance and audit logs.
+- **data-py** (FastAPI) - upload intake, dataset and query APIs, job progress over SSE.
+- **data-worker** (ARQ) - the ingest pipeline, dashboard generation and AI insights.
+- **PostgreSQL**, **Redis** and **S3-compatible object storage** for state, jobs and files.
+
+One property shaped everything else: **services never call each other synchronously**. data-py verifies JWTs locally using auth-node's public key from its JWKS endpoint (cached, and refreshed when it sees an unknown key ID). When a user is deleted, auth-node publishes an event on Redis instead of calling other services.
+
+## From upload to dashboard
+
+1. **Upload.** Multipart chunks stream straight to object storage in 8 MB parts while data-py receives them. The API answers `202 Accepted` with the dataset's metadata and enqueues an ingest job - the request never waits for processing.
+2. **Ingest.** The worker runs an idempotent pipeline - `parsing` (Polars for CSV, fastexcel for XLSX) -> `profiling` (type inference and column profiles) -> `building_dashboard` -> `generating_insight` -> `ready`. Failed jobs retry up to three times with backoff and always restart clean.
+3. **Progress.** Each stage publishes to Redis pub/sub, and data-py streams it to the browser over Server-Sent Events, so the user watches the dashboard being built.
+4. **Query.** A single `POST /datasets/{id}/query` carries every widget's spec plus the shared filters. Polars evaluates all of them against the cached Parquet file in one request, so changing a filter is one round trip, not one per chart.
+
+## Grounded AI briefs
+
+The brief is where most "AI dashboard" products go wrong: language models are fluent with numbers they never computed. InsightFlow separates **computing facts** from **narrating them**.
+
+1. **Facts engine (Polars).** Computes totals, period-over-period deltas and their drivers, robust z-score anomalies and category shares. Every fact gets an ID and, where relevant, a reference to the widget and data point it came from.
+2. **LLM adapter.** Turns those facts into a summary, findings and suggested questions using Gemini (or a mock in development). The model cites numbers only as `{{factId}}` placeholders, which the UI resolves and links back to the chart.
+3. **Validator.** Rejects any number that appears outside a fact reference - including bare dates and numerals. Ungrounded sentences trigger a retry with feedback, or are removed; if the brief still fails, it falls back to a template.
+
+```text title="Illustrative output shape (not the production prompt)"
+Revenue rose {{f_total_delta}} versus the previous period, driven mostly by
+{{f_driver_1}}. One anomaly stands out: {{f_anomaly_1}}.
+```
+
+<Callout type="tip" title="Why this works">
+  The model is used for what it's good at - language and emphasis - while arithmetic stays in code that can be tested. Every figure a reader sees can be traced to a computed fact.
+</Callout>
+
+## Key decisions
+
+Each of these is recorded as an Architecture Decision Record in the repo.
+
+- **Schema per service** (ADR-006) - `auth` and `analytics` live in separate PostgreSQL schemas, each with its own database role.
+- **Custom RS256 JWT + JWKS** (ADR-007) - short-lived (15-minute) access tokens held in memory, rotating refresh cookies, and reuse detection: replaying a rotated refresh token revokes its whole family.
+- **SSE for job progress** (ADR-008) - pipeline stages stream from data-py to the browser as Server-Sent Events, through the gateway.
+- **Provider-agnostic LLM** (ADR-010) - the adapter hides the provider, so development and tests run against a mock.
+- **Deferring rollups** (ADR-011) - pre-aggregated metric rollups were planned, but single-request, multi-widget Polars queries over cached Parquet already meet the p95 target, so they were deferred.
+- **MSW and per-service mock switches** (ADR-009, ADR-013) - the UI was built first against mock handlers that mirror the API contract, and each service can be swapped for its mock independently.
+- **Fastify over Express, Drizzle over Prisma, Polars over pandas** (ADR-002, 003, 004).
+
+{/* TODO(Saif): add one line on *why* for Fastify / Drizzle / Polars from the ADRs. */}
+
+## Performance
+
+Measured - never estimated - on development containers with a 1-million-row, 86.7 MB CSV.
+
+| Measurement | Result | Target |
+| --- | --- | --- |
+| Upload response time | 14-19 ms | under 1 s |
+| Dashboard ready | 12.0-12.5 s | under 30 s |
+| Filtered query p95 | 368-377 ms | under 500 ms |
+
+Three optimisations did most of the work:
+
+| Optimisation | Before | After |
+| --- | --- | --- |
+| Stream uploads to object storage in 8 MB chunks | 1,428 ms | 14 ms |
+| Ordered type-inference rules with prefix checks | 17.5 s | 12.5 s |
+| Single-pass KPI aggregation with masked windows | 631 ms | 368 ms |
+
+## Testing
+
+- **189 automated tests** - 105 pytest tests using Testcontainers against real PostgreSQL and Redis, 71 Vitest tests and 13 hybrid tests.
+- **Two Playwright suites** - one against MSW mocks for fast UI feedback, one end-to-end against the real services.
+- **CI** checks the OpenAPI contracts for drift and runs the end-to-end suite against production images, not dev builds.
+
+## Takeaways
+
+- **Keep computation out of the model.** Treat the LLM as a narrator over verified facts and validate its output like any other untrusted input.
+- **Async by default.** A `202` plus a job and a progress stream made a 12-second pipeline feel responsive, and kept services decoupled.
+- **Measure before optimising.** Each of the three big wins came from a benchmark that pointed at the exact bottleneck.
+
+{/* TODO(Saif): personalise the takeaways - what surprised you, what you'd change next. */}

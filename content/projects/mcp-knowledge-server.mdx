@@ -1,0 +1,32 @@
+{/* DRAFT - written from Saif's CV plus a teammate's public description of the platform, in our own words.
+    Review every line; keep it anonymised (no product names, customers, endpoints or internal numbers). */}
+
+## Context
+
+AI coding assistants are only as good as the context they can reach. Developers integrating against a large internal API surface were getting plausible-looking but wrong answers - the wrong endpoint, the wrong auth scheme, a guessed request body. We built a **Model Context Protocol (MCP) server** so assistants can look up the real answer instead of inventing one.
+
+{/* TODO(Saif): one line on who used it (internal developers? integration partners?) and what you owned. */}
+
+## A deliberately read-only boundary
+
+The server exposes **search and retrieval tools only**. It serves knowledge about the APIs; it never executes calls, holds credentials or changes data. That single decision made it safe to put in front of AI agents: the worst an agent can do is read the documentation.
+
+## Turning a large API surface into one model
+
+- Overlapping and duplicated operations are normalised into one clean, queryable model.
+- Each operation carries its resolved authentication scheme and request schema, so the assistant can produce a correct call on the first attempt.
+- Results are scoped by what the developer is building, so a question resolves against the relevant product area rather than the whole surface.
+- Generated code uses the developer's own base URL instead of hard-coded hosts.
+
+{/* TODO(Saif): which of these parts did you build? Add the stack you used (e.g. Python FastMCP, TypeScript @modelcontextprotocol/sdk). */}
+
+## Shipping and testing
+
+{/* TODO(Saif): how it was packaged and distributed, and how you tested it (e.g. regression suite over known questions). */}
+
+## What I learned
+
+- Read-only is a feature: it turned a security conversation into a five-minute one.
+- Retrieval quality depends on modelling the source data well, not on the model.
+
+{/* TODO(Saif): personalise. */}

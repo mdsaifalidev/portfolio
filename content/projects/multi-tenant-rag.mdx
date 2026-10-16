@@ -1,0 +1,41 @@
+{/* DRAFT - written from Saif's CV plus a teammate's public description of the platform, in our own words.
+    Keep it anonymised: no product names, customers or internal data. */}
+
+## Context
+
+Teams were spending too long hunting for answers across documents. The platform gives each organisation (tenant) a private knowledge base and a chatbot that answers from it - and only from it.
+
+<Metrics
+  items={[
+    { value: "**~30%**", label: "Less manual retrieval time" },
+    { value: "Per-tenant", label: "Isolated knowledge bases" },
+    { value: "End to end", label: "Ingestion to answer" },
+  ]}
+/>
+
+## The pipeline
+
+1. **Ingest** - content is collected per tenant (documents and crawled web pages).
+2. **Parse and chunk** - content is cleaned and split into retrieval-sized chunks.
+3. **Embed** - each chunk is embedded and stored with its tenant's vectors.
+4. **Retrieve** - at question time, the top matching chunks for that tenant are found by semantic search.
+5. **Answer** - the model answers from the retrieved chunks and returns links to its sources.
+
+{/* TODO(Saif): confirm the vector store. Your CV says pgvector; a teammate's write-up describes MongoDB Atlas Vector Search with per-tenant namespaces. Were there two iterations, or different parts? Also confirm the embedding model. */}
+
+## Tenant isolation
+
+Isolation is a security boundary, not a feature: a question from one tenant must never retrieve another tenant's content. Retrieval is always scoped to the asking tenant, and tenants are identified by their own API keys, which also drive usage tracking for plan limits.
+
+{/* TODO(Saif): how isolation is enforced (separate collections/namespaces vs a tenant filter) and how it's tested. */}
+
+## Embeddable chatbot
+
+{/* TODO(Saif): describe the embeddable widget if you worked on it. */}
+
+## Outcome
+
+- **~30%** less time spent on manual information retrieval.
+- New tenants onboard onto the same pipeline without new infrastructure.
+
+{/* TODO(Saif): lessons learned. */}
