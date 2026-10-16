@@ -7,6 +7,7 @@ import { ProjectBadges, ProjectHighlights, ProjectLinks } from "@/components/pro
 import { TagList } from "@/components/ui/Tag";
 import { getCaseStudies, getCaseStudy, getHeadings, readingTime } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 export const dynamicParams = false;
 
@@ -62,15 +63,28 @@ export default async function CaseStudyPage({ params }: PageProps<"/projects/[sl
           <ProjectLinks project={project} className="mt-6" />
           <TagList tags={project.tags} label={`Technologies used in ${project.title}`} />
           {project.image && (
-            <Image
-              src={project.image}
-              alt={`Screenshot of ${project.title}`}
-              width={1280}
-              height={800}
-              priority
-              sizes="(min-width: 768px) 68ch, 100vw"
-              className="mt-10"
-            />
+            <>
+              <Image
+                src={project.image}
+                alt={`Screenshot of ${project.title}`}
+                width={1280}
+                height={800}
+                priority
+                sizes="(min-width: 768px) 68ch, 100vw"
+                className={cn("mt-10", project.imageDark && "dark:hidden")}
+              />
+              {project.imageDark && (
+                <Image
+                  src={project.imageDark}
+                  alt={`Screenshot of ${project.title}`}
+                  width={1280}
+                  height={800}
+                  priority
+                  sizes="(min-width: 768px) 68ch, 100vw"
+                  className="mt-10 hidden dark:block"
+                />
+              )}
+            </>
           )}
         </header>
       }

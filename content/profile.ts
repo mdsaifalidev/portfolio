@@ -26,8 +26,10 @@ export type Project = {
   caseStudy?: boolean;
   /** Draft case studies only render in `pnpm dev` until reviewed. */
   draft?: boolean;
-  /** Screenshot under /public, 16:10. */
+  /** Screenshot under /public, 16:10. Default / light theme. */
   image?: string;
+  /** Screenshot under /public, 16:10. Dark theme variant. */
+  imageDark?: string;
   live?: string;
   code?: Link[];
 };
@@ -151,7 +153,8 @@ export const projects: Project[] = [
     kind: "personal",
     featured: true,
     caseStudy: true,
-    image: "/projects/dashboard-dark.webp",
+    image: "/projects/dashboard-light.webp",
+    imageDark: "/projects/dashboard-dark.webp",
     live: "https://useinsightflow.vercel.app",
     code: [{ label: "Code", href: "https://github.com/mdsaifalidev/InsightFlow" }],
   },

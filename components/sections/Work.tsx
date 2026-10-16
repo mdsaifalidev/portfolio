@@ -72,14 +72,29 @@ function projectFolder(p: Project, anchor?: string): Folder {
     title: p.title,
     category: p.kind === "work" ? "Professional project" : "Personal project",
     picture: p.image ? (
-      <Image
-        src={p.image}
-        alt={`Screenshot of ${p.title}`}
-        width={1280}
-        height={800}
-        sizes="(min-width: 1024px) 55vw, 100vw"
-        className="aspect-[16/10] h-auto w-full object-cover object-top"
-      />
+      <>
+        <Image
+          src={p.image}
+          alt={`Screenshot of ${p.title}`}
+          width={1280}
+          height={800}
+          sizes="(min-width: 1024px) 55vw, 100vw"
+          className={cn(
+            "aspect-[16/10] h-auto w-full object-cover object-top",
+            p.imageDark && "dark:hidden",
+          )}
+        />
+        {p.imageDark && (
+          <Image
+            src={p.imageDark}
+            alt={`Screenshot of ${p.title}`}
+            width={1280}
+            height={800}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            className="hidden aspect-[16/10] h-auto w-full object-cover object-top dark:block"
+          />
+        )}
+      </>
     ) : null,
     lead: p.summary,
     details: (
