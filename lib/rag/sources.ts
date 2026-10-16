@@ -185,5 +185,10 @@ export function buildChunks(): Chunk[] {
   for (const post of posts.filter((p) => !p.draft)) {
     chunks.push(...mdxChunks("blog", post.slug, post.title));
   }
-  return chunks;
+  // Normalize line endings to LF so hash is deterministic across Windows and Linux (CI)
+  return chunks.map((c) => ({
+    ...c,
+    text: c.text.replace(/\r\n/g, "\n").replace(/\r/g, "\n"),
+  }));
 }
+

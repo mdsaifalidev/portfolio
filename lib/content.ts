@@ -74,6 +74,8 @@ function readSource(kind: "projects" | "blog", slug: string) {
 /** Strip code fences, JSX and MDX comments so they don't inflate word counts or headings. */
 export function prose(source: string) {
   return source
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
     .replace(/```[\s\S]*?```/g, "")
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
     .replace(/<[^>]+>/g, "");
