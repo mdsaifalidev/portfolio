@@ -151,7 +151,7 @@ export const projects: Project[] = [
     kind: "personal",
     featured: true,
     caseStudy: true,
-    image: "/projects/insightflow.jpg",
+    image: "/projects/dashboard-dark.webp",
     live: "https://useinsightflow.vercel.app",
     code: [{ label: "Code", href: "https://github.com/mdsaifalidev/InsightFlow" }],
   },
@@ -170,40 +170,6 @@ export const projects: Project[] = [
     caseStudy: true,
     image: "/projects/portfolio-ai-assistant-v3.jpg",
     // TODO(Saif): add `code: [{ label: "Code", href: "https://github.com/mdsaifalidev/<repo>" }]` once pushed.
-  },
-  {
-    slug: "mock-interview-ai",
-    title: "Mock Interview AI",
-    summary:
-      "A Gemini-powered interview-prep platform that generates role-specific questions and evaluates answers in real time, with speech-to-text and structured feedback.",
-    highlights: [
-      "Stripe subscription billing",
-      "Speech-to-text answers with prompt-engineered feedback",
-      "Redis caching + TanStack Query",
-    ],
-    tags: ["Node.js", "Express", "React", "MongoDB", "Gemini", "Stripe", "Redis"],
-    kind: "personal",
-    image: "/projects/mock-interview-ai-2026-10.jpg",
-    live: "https://mockaiinterview.vercel.app",
-    code: [
-      { label: "Frontend", href: "https://github.com/mdsaifalidev/Mock-Interview-AI-Frontend" },
-      { label: "Backend", href: "https://github.com/mdsaifalidev/Mock-Interview-AI-Backend" },
-    ],
-  },
-  {
-    slug: "shopfinity",
-    title: "Shopfinity",
-    summary:
-      "A full-stack e-commerce platform with an admin dashboard, persistent cart, PayPal checkout, order tracking and a coupon system.",
-    highlights: [
-      "JWT auth with refresh-token rotation",
-      "Role-based User / Admin access",
-      "Cloudinary media management",
-    ],
-    tags: ["Next.js", "TypeScript", "Express", "Prisma", "PostgreSQL", "PayPal"],
-    kind: "personal",
-    live: "https://shopfinity-xi.vercel.app",
-    code: [{ label: "Code", href: "https://github.com/mdsaifalidev/Shopfinity" }],
   },
   {
     slug: "event-driven-microservices",
@@ -391,8 +357,8 @@ export const capabilities: Capability[] = [
   {
     domain: "Payments & auth",
     evidence: [
-      { text: "Stripe subscriptions in Mock Interview AI", href: "https://mockaiinterview.vercel.app" },
-      { text: "PayPal checkout and refresh-token rotation in Shopfinity", href: "https://shopfinity-xi.vercel.app" },
+      { text: "Stripe payments and asynchronous order processing at Sasefied", href: "/#experience" },
+      { text: "OAuth2 social login and payment gateway integrations at E-SUTRA", href: "/#experience" },
     ],
     tools: ["Stripe", "PayPal", "JWT", "OAuth2"],
   },
