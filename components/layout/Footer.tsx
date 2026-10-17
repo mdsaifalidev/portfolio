@@ -46,8 +46,7 @@ export function Footer() {
 
         <div className="mt-14 space-y-2 text-center text-step-0 text-[var(--page-muted)]">
           <p>
-            © {new Date().getFullYear()} {profile.name} | Revised{" "}
-            {new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })} | Set in Archivo | Built with Next.js  | {" "}
+            © {new Date().getFullYear()} {profile.name} |{" "}
             <Link href="/privacy" className="link text-[var(--page-ink)]">
               Privacy
             </Link>

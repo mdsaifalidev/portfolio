@@ -1,5 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0c0b09"/>
-  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#2b2720" stroke-width="3"/>
-  <text x="32" y="42" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="28" font-weight="700" fill="#ffb000">SA</text>
+  <style>
+    :root {
+      --bg: #0c1015;
+      --border: #323b46;
+      --accent: #93b3ff;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f2f4f5;
+        --border: #c3c9c1;
+        --accent: #1747c9;
+      }
+    }
+  </style>
+  <rect width="64" height="64" rx="14" fill="var(--bg)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="var(--border)" stroke-width="2"/>
+  <text x="32" y="43" text-anchor="middle" font-family="Archivo, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="var(--accent)" letter-spacing="-0.03em">SA</text>
 </svg>
