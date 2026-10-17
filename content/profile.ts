@@ -71,7 +71,7 @@ export const profile = {
   timezone: "IST (UTC+5:30)",
   availability: "Open to work, remote or relocation",
   email: "saifmd9536@gmail.com",
-  resume: "/resume.pdf",
+  resume: "/MD.%20SAIF%20ALI_RESUME.pdf",
   github: "https://github.com/mdsaifalidev",
   linkedin: "https://www.linkedin.com/in/mdsaifali09",
 };

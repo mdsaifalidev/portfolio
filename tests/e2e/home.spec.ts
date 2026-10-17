@@ -55,8 +55,12 @@ test.describe("home page", () => {
   });
 
   test("serves the resume PDF", async ({ request }) => {
-    const res = await request.get("/resume.pdf");
+    const res = await request.get("/MD.%20SAIF%20ALI_RESUME.pdf");
     expect(res.ok()).toBe(true);
     expect(res.headers()["content-type"]).toContain("application/pdf");
+
+    const fallback = await request.get("/resume.pdf");
+    expect(fallback.ok()).toBe(true);
+    expect(fallback.headers()["content-type"]).toContain("application/pdf");
   });
 });

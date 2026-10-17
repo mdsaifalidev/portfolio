@@ -33,7 +33,7 @@ The site demonstrates the skill it advertises: its own assistant answers questio
 
 ## Evidence on Hand
 - Metrics in `content/profile.ts`: ~30% less manual retrieval (RAG platform), p95 REST latency −20%, 6+ microservices, ~60% less manual release effort, 80%+ coverage, ~40% faster page loads; InsightFlow p95 368–377 ms, 1M rows in ~12 s, 189 tests.
-- Screenshots: `public/projects/insightflow.jpg`, `public/projects/mock-interview-ai.jpg`. Résumé: `public/resume.pdf`.
+- Screenshots: `public/projects/insightflow.jpg`, `public/projects/mock-interview-ai.jpg`. Résumé: `public/MD. SAIF ALI_RESUME.pdf` (previous version: `public/resume.pdf`).
 - Portrait: Saif will provide `public/me.jpg` (not yet present).
 - Absent, never to be fabricated: testimonials, employer logos, client names, press, follower counts.
 

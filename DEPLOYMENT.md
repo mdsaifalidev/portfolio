@@ -35,7 +35,7 @@ Optional but recommended: `pnpm test:e2e` (builds and runs the browser + accessi
 
 - [ ] **Drafts.** Anything with `draft: true` in `content/profile.ts` or `content/posts.ts` is hidden on the live site. Publish only what you've reviewed: HRMS and Real-Time Communication platforms, the five work case studies, and the blog posts are still drafts with `TODO(Saif)` notes.
 - [ ] **Headshot** (optional): add a square photo as `public/headshot.jpg` (≥ 800 px).
-- [ ] **Résumé**: `public/resume.pdf` is the latest version.
+- [x] **Résumé**: `public/MD. SAIF ALI_RESUME.pdf` (latest) is active; `public/resume.pdf` (previous version) is preserved.
 - [ ] Remove or move `Md. Saif Ali - Portfolio.zip` out of the project folder — it is git-ignored, but don't upload it anywhere.
 
 ---
