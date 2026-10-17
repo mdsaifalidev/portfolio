@@ -44,7 +44,7 @@ The brief is where most "AI dashboard" products go wrong: language models are fl
 
 1. **Facts engine (Polars).** Computes totals, period-over-period deltas and their drivers, robust z-score anomalies and category shares. Every fact gets an ID and, where relevant, a reference to the widget and data point it came from.
 2. **LLM adapter.** Turns those facts into a summary, findings and suggested questions using Gemini (or a mock in development). The model cites numbers only as `{{factId}}` placeholders, which the UI resolves and links back to the chart.
-3. **Validator.** Rejects any number that appears outside a fact reference - including bare dates and numerals. Ungrounded sentences trigger a retry with feedback, or are removed; if the brief still fails, it falls back to a template.
+3. **Validator.** Rejects any number that appears outside a fact reference - including bare dates and numerals. Ungrounded sentences trigger a retry with feedback or are removed. If the brief still fails, it falls back to a template.
 
 ```text title="Illustrative output shape (not the production prompt)"
 Revenue rose {{f_total_delta}} versus the previous period, driven mostly by

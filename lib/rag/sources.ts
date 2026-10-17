@@ -32,7 +32,7 @@ function profileChunks(): Chunk[] {
         `Headline: ${profile.headline}`,
         `Availability: ${profile.availability}. He is open to full-stack, backend (Node.js) and AI / GenAI engineering roles, remote or with relocation.`,
         `Current role: ${experience[0].role} at ${experience[0].company} (${experience[0].start} - ${experience[0].end}).`,
-        `Contact: email ${profile.email}; LinkedIn ${profile.linkedin}; GitHub ${profile.github}; resume (PDF) at ${profile.resume}.`,
+        `Contact: email ${profile.email}, LinkedIn ${profile.linkedin}, GitHub ${profile.github}, resume (PDF) at ${profile.resume}.`,
       ].join("\n"),
     },
     { id: "about", title: "About", url: "/#about", text: about.map(plain).join("\n\n") },
@@ -100,7 +100,7 @@ function profileChunks(): Chunk[] {
     text: capabilities
       .map((c) => {
         const shipped = c.evidence.filter((e) => !e.draft).map((e) => e.text);
-        return `${c.domain}: ${shipped.length ? `shipped ${shipped.join("; ")}. ` : ""}Tools: ${c.tools.join(", ")}.`;
+        return `${c.domain}: ${shipped.length ? `shipped ${shipped.join(", ")}. ` : ""}Tools: ${c.tools.join(", ")}.`;
       })
       .join("\n"),
   });

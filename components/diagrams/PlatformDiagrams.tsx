@@ -33,7 +33,7 @@ function Arrow({ x1, x2, y }: { x1: number; x2: number; y: number }) {
 
 export function RagDiagram() {
   return (
-    <svg viewBox="0 0 800 500" role="img" aria-label="Diagram: each tenant's documents go through ingestion, chunking and embeddings into that tenant's own vector store; semantic search answers only from the asking tenant's store." className="h-auto w-full">
+    <svg viewBox="0 0 800 500" role="img" aria-label="Diagram: each tenant's documents go through ingestion, chunking and embeddings into that tenant's own vector store, where semantic search answers only from the asking tenant's store." className="h-auto w-full">
       {["Tenant A", "Tenant B", "Tenant C"].map((t, i) => (
         <Block key={t} x={0} y={40 + i * 150} w={170} label={t} sub="documents" />
       ))}
@@ -67,7 +67,7 @@ export function RagDiagram() {
 
 export function McpDiagram() {
   return (
-    <svg viewBox="0 0 800 500" role="img" aria-label="Diagram: AI agents and coding assistants call a read-only MCP server, which exposes search and retrieval tools over organisational knowledge; nothing an agent calls can change data." className="h-auto w-full">
+    <svg viewBox="0 0 800 500" role="img" aria-label="Diagram: AI agents and coding assistants call a read-only MCP server, which exposes search and retrieval tools over organisational knowledge, ensuring nothing an agent calls can change data." className="h-auto w-full">
       {["AI agent", "Coding assistant", "Chat client"].map((t, i) => (
         <Block key={t} x={0} y={40 + i * 150} w={210} label={t} />
       ))}

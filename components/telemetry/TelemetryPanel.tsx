@@ -88,7 +88,7 @@ export function TelemetryPanel() {
               aria-label={
                 top.length
                   ? `World map highlighting visitors from ${top.length} ${top.length === 1 ? "country" : "countries"}.`
-                  : "World map; no visits recorded yet."
+                  : "World map - no visits recorded yet."
               }
             >
               {state.world.dots.map(([x, y, code], i) => {

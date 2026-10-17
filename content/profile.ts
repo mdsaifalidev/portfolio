@@ -106,7 +106,7 @@ export const experience: Experience[] = [
     end: "Aug 2025",
     bullets: [
       "Designed and built a Node.js/Express.js microservices backend of **6+ services**, containerised with Docker (images in AWS ECR) and deployed on Kubernetes (AWS EKS) using Helm charts.",
-      "Deployed applications on AWS EC2; stored media and backups in S3; managed IAM users, roles and permissions; connected domains with Route 53; monitored with CloudWatch.",
+      "Deployed applications on AWS EC2 with S3 for media and backups, managed IAM roles and permissions, connected domains with Route 53, and monitored with CloudWatch.",
       "Implemented asynchronous RabbitMQ messaging between services (RPC and event-driven), decoupling core business logic.",
       "Built GitHub Actions CI/CD pipelines with Mocha/Chai unit and integration suites, cutting manual release effort by **~60%** and raising test coverage to **80%+**.",
     ],

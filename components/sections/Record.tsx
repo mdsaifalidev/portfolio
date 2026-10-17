@@ -56,7 +56,7 @@ export function Record() {
 
           <figure className="mt-14">
             <figcaption className="sr-only">
-              Timeline of roles: {rows.map((r) => `${r.label}, ${r.months} months`).join("; ")}.
+              Timeline of roles: {rows.map((r) => `${r.label}, ${r.months} months`).join(". ")}.
             </figcaption>
             <div aria-hidden="true" className="space-y-4">
               {rows.map((r) => (

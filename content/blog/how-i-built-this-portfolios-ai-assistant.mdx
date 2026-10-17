@@ -4,7 +4,7 @@ Every portfolio answers the questions its author expected. I wanted mine to answ
 
 ## Start from the content you already have
 
-The assistant's knowledge base is the site itself. My experience, projects and skills live in one typed TypeScript file that renders the home page; case studies and posts are MDX. An ingest script turns both into chunks - one per role, one per project, one per `##` section of each article - each with a link to where it lives on the site.
+The assistant's knowledge base is the site itself. My experience, projects and skills live in one typed TypeScript file that renders the home page, while case studies and posts are MDX. An ingest script turns both into chunks - one per role, one per project, one per `##` section of each article - each with a link to where it lives on the site.
 
 That one decision gave me three things for free: the assistant can never drift from the site, citations can deep-link to the exact paragraph, and unpublished drafts are simply never indexed.
 
@@ -20,7 +20,7 @@ My first version couldn't answer "where does Saif work now?" The right chunk exi
 
 ## Pick the model by measuring it
 
-I expected the newest model to be the obvious choice. On my key it took over 20 seconds to say "ok", while a Lite model streamed its first token in about 1.2 seconds. One model's free tier also allowed only 20 requests a day - fine for testing, fatal for a public page. Measure latency and check quotas before you commit; keep the model name in an environment variable.
+I expected the newest model to be the obvious choice. On my key it took over 20 seconds to say "ok", while a Lite model streamed its first token in about 1.2 seconds. One model's free tier also allowed only 20 requests a day - fine for testing, fatal for a public page. Measure latency and check quotas before you commit, and keep the model name in an environment variable.
 
 ## Guardrails are mostly product decisions
 
