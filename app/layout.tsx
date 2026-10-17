@@ -69,6 +69,9 @@ export const metadata: Metadata = {
     title: `${profile.name} - ${profile.role}`,
     description,
   },
+  verification: {
+    google: "PJsRTCvRYLYNRfzh9S_ccSz1cmkaWWIOJ91oAbsJ5dg",
+  },
 };
 
 export const viewport: Viewport = {
